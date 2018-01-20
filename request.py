@@ -5,5 +5,5 @@ app = Flask(__name__)
 
 @app.route('/')
 def main():
-    message = "hello"
-    return render_template("main.html", message=message)    
+    message = "WHY WHY MANTI"
+    return render_template("main.html", message=message)
