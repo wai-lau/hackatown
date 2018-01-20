@@ -19,10 +19,15 @@ from fastkml import kml
 ##    k = kml.KML()
 ##    k.from_string(myfile.read())
 
+# If python 2: use the following pls
 # Open file for reading
-myfile = open('mtl_shelters.xml', 'rt', encoding="ISO-8859-1")
+myfile = open('mtl_shelters.xml', 'rt')
 # Read in from file
 doc = myfile.read()
+# Convert Latin-1 encoding to UTF-8
+doc.decode('ISO-8859-1').encode('UTF-8')
+
+# If python3: use myfile = open('mtl_shelters.xml', 'rt', encoding='ISO-8859-1')
 
 # Instantiate KML object
 k = kml.KML()
@@ -33,6 +38,7 @@ kdocument = list(k.features())
 kfolder = list(kdocument[0].features())
 # List of placemarks
 kplacemarks = list(kfolder[0].features())
+print 'Placemarks parsed'
 
 # Read in the KML string
 ##k.from_string(doc)
