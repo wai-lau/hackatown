@@ -3,7 +3,8 @@ import md5
 import random
 import datetime
 from flask import Flask, render_template, request
-
+from parseFL import getShelters
+from getParks import getParks
 
 app = Flask(__name__)
 hash_data = {}
@@ -41,3 +42,9 @@ def create_group():
     key = m.hexdigest().encode('utf-8').strip()
     hash_data[key] = {}
     return json.dumps({'success':True, 'key': key}), 200, {'ContentType':'application/json'}
+
+@app.route('/load_data', methods=['POST'])
+def load_data():
+    shelters = getShelters()
+    parks = getParks()
+    return json.dumps({'success':True, 'parks': parks, 'shelters': shelters}), 200, {'ContentType':'application/json'}
