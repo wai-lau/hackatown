@@ -1,19 +1,17 @@
 var map;
 
 function initMap() {
-  var myLatlng = {lat: 45.5017, lng: -73.5673};
-
   map = new google.maps.Map(document.getElementById('map'), {
-    center: myLatlng,
-    zoom: 8
+    center: {lat: 45.5017, lng: -73.5673},
+    zoom: 10
   });
-
-  var marker = new google.maps.Marker({
-    position: myLatlng,
-    map: map,
-    title: 'Click to zoom'
-  });
-
+  console.log(markers)
+  for (let i = 0; i < markers.length; i++) {
+    var marker = new google.maps.Marker({
+      position: markers[i]['position'],
+      map: map,
+    });
+  }
 
   map.addListener('click', function(e) {
     placeMarkerAndPanTo(e.latLng, map);
