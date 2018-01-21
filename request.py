@@ -19,11 +19,11 @@ def group(key):
                            api_key=api_key,
                            markers=markers,
                            key=key)
-
-
+                                        
 @app.route('/')
 def main():
-    return render_template("main.html", message="")
+    api_key = 'AIzaSyAl-P2j3M-a-IjP7Vfkp_ChinCQMTsb__0'
+    return render_template("main.html", message="", api_key=api_key)
 
 @app.route('/group_request/<key>', methods=['POST'])
 def group_request(key):

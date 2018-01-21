@@ -4,10 +4,9 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="initial-scale=1.0">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src='https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=init' async defer></script>
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'map.js') }}" ></script>
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'jquery-latest.js') }}" ></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
 	<title>TITLE</title>
 
 	<style>
@@ -26,10 +25,41 @@
 </head>
 
 <body>
+	{% include 'navbar.html' %}
+<div class="jumbotron">
+	<div class="container text-center">
+		<h1>Welcome to One Ok Maps!</h1>
+		<p>Endorsed by One Ok Rock!</p>
+		<form>
+				<div class="form-group">
+					<div class="row">
+						<div class="col-md-2">
 
-<h1>{{message}}</h1>
-<button type="button">New Group</button>
-<button type="button">Join Group</button>
+						</div>
+						<div class="col-md-8">
+								<label for="inputHash">Enter a new group name or join an existing one.</label>
+								<input type="text" class="form-control input-lg" id="inputHash" placeholder="">
+						</div>
+							
+						<div class="col-md-2">
+									
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6 main-button">
+								<a class="btn btn-primary btn-lg" href="#" role="button">New Group</a> 
+						</div>
+						<div class="col-md-6 main-button">
+								<a class="btn btn-primary btn-lg" href="#" role="button">Join Group</a>
+							</div>
+					</div>
+				</div>
+	
+		</form>
+	</div>
+</div>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 
 </body>
