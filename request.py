@@ -6,6 +6,7 @@ from flask import Flask, render_template, request
 from parseFL import getShelters
 from getParks import getParks
 
+
 app = Flask(__name__)
 hash_data = {}
 success = json.dumps({'success':True}), 200, {'ContentType':'application/json'}
@@ -29,6 +30,7 @@ def main():
 
 @app.route('/add_marker/<key>', methods=['POST'])
 def add_marker(key):
+    print(request.get_json())
     lat_lng_json = request.get_json()['latLng']
     name = request.get_json()['name']
     hash_data[key][name] = {'position':json.loads(lat_lng_json)}
@@ -37,8 +39,6 @@ def add_marker(key):
 @app.route('/remove_marker/<key>', methods=['POST'])
 def remove_marker(key):
     name = request.get_json()['name']
-    print(name)
-    print([n for n in hash_data[key]])
     if key in hash_data and name in hash_data[key]:
         del hash_data[key][name]
         return success
@@ -67,6 +67,8 @@ def check_dirty(key):
             if n not in keys:
                 clean = False
                 break
+    print(keys)
+    print(hash_data[key])
     if clean:
         return success
     return fail
@@ -78,6 +80,7 @@ def load_data():
     return json.dumps({'success':True, 'parks': parks, 'shelters': shelters}), 200, {'ContentType':'application/json'}
 
 @app.route('/add_polygon/<key>', methods=['POST'])
+
 def add_polygon(key):
     # Get name (hash ID) of polygon
     name = request.get_json()['name']

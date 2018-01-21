@@ -8,6 +8,7 @@ class PolygonWrapper {
     this.name = Date.now() + Math.random();
   }
 
+
   kill() {
   	// Send polygon to the void
   	if (this.polygon)
