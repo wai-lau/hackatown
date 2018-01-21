@@ -37,8 +37,6 @@ def add_marker(key):
 @app.route('/remove_marker/<key>', methods=['POST'])
 def remove_marker(key):
     name = request.get_json()['name']
-    print(name)
-    print([n for n in hash_data[key]])
     if key in hash_data and name in hash_data[key]:
         del hash_data[key][name]
         return success
