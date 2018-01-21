@@ -1,0 +1,14 @@
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    background-color: #2C3E50;
+}
+
+#inputHash {
+    font-size: 32px;
+}
+
+.main-button {
+    padding-top: 10px;
+}
+  
