@@ -10,6 +10,18 @@ initMap = (markers, key) => {
     center: {lat: 45.5017, lng: -73.5673},
     zoom: 10
   });
+  var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
+  var icons = {
+    parking: {
+      icon: iconBase + 'parking_lot_maps.png'
+    },
+    library: {
+      icon: iconBase + 'library_maps.png'
+    },
+    info: {
+      icon: iconBase + 'info-i_maps.png'
+    }
+  };
   MARKERS = markers;
   addClickListener();
   loadAllMarkers();
@@ -117,4 +129,40 @@ placeAndBindMarker = (latLng, name) => {
   });
   FRONT_END_MARKERS[name] = newMarker
   bindMarkerEvents(newMarker, name);
+}
+
+loadData = () => {
+  $.ajax({
+    url: '/load_data',
+    type: 'post',
+    dataType: 'json',
+    contentType: 'application/json',
+    success: function (xhr) {
+      console.log(xhr);
+      let data = [xhr['shelters'], xhr['parks']];
+      populateLoadMarkers(data)
+    },
+    error: function(xhr) {
+      alert('nuh');
+      console.log(xhr);
+    }
+  });
+}
+
+populateLoadMarkers = (data) => {
+  let newMarker = null;
+  let locationData = null;
+  let iconType = null;
+  for (let dataType in data) {
+  	for (let location in data[dataType]){
+  		locationData = data[dataType][location];
+      iconType = dataType == 0 ? 'https://png.icons8.com/color/50/000000/home.png'
+                                  : 'https://png.icons8.com/color/50/000000/deciduous-tree.png'
+      newMarker = new google.maps.Marker({
+        position: {lat: locationData.coordinates[1], lng: locationData.coordinates[0]},
+        map: MAP,
+        icon: iconType
+      })
+    }
+  }
 }
