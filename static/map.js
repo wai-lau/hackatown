@@ -16,7 +16,7 @@ initMap = (markers, key) => {
   // Initialize polygon list and pushes the initial polygon
   polygonList = [];
   polygonList.push(new PolygonWrapper(MAP));
-  //setInterval(() => { alert("Hello"); }, 3000);
+  setInterval(pollDirtyBackEnd(), 3000);
 }
 
 sendMarkerToBackEnd = (e, name) => {
@@ -29,6 +29,22 @@ sendMarkerToBackEnd = (e, name) => {
     success: function (xhr) {
       MARKERS[name] = {'position': JSON.stringify(e.latLng)}
       console.log(MARKERS)
+    },
+    error: function(xhr) {
+      console.log(xhr);
+    }
+  });
+}
+
+removeMarkerFromBackEnd = (name) => {
+  $.ajax({
+    url: '/remove_marker/' + KEY,
+    type: 'post',
+    dataType: 'json',
+    contentType: 'application/json',
+    data: JSON.stringify({'name':name}),
+    success: function(xhr) {
+      console.log(name + ' removed.')
     },
     error: function(xhr) {
       console.log(xhr);
@@ -91,17 +107,30 @@ addClickListener = () => {
   });
 }
 
-var bindMarkerEvents = function(marker) {
-  google.maps.event.addListener(marker, "rightclick", function (e) {
-    var markerId = e.latLng.lat() + '_' + e.latLng.lng(); // get marker id by using clicked point's coordinate
+placeAndBindMarker = (latLng, name) => {
+  let newMarker = new google.maps.Marker({
+    position: latLng,
+    map: MAP
+  });
+  FRONT_END_MARKERS[name] = newMarker
+  FRONT_END_MARKERS[name].name = name
+  bindMarkerEvents(newMarker, name);
+}
+
+var bindMarkerEvents = (marker) => {
+  google.maps.event.addListener(marker, "rightclick", (e) => {
+    var markerId = e.latLng.lat() + '_' + e.latLng.lng();
     var marker = FRONT_END_MARKERS[markerId]; // find marker
-    removeMarker(marker, markerId); // remove it
+    delete FRONT_END_MARKERS[markerId];
+    FRONT_END_MARKERS[marker.name] = marker;
+    removeMarker(marker); // remove it
   });
 };
 
-var removeMarker = function(marker, markerId) {
+var removeMarker = (marker) => {
   marker.setMap(null); // set markers setMap to null to remove it from map
-  delete FRONT_END_MARKERS[markerId]; // delete marker instance from markers object
+  delete FRONT_END_MARKERS[marker.name]; // delete marker instance from markers object
+  removeMarkerFromBackEnd(marker.name);
 };
 
 loadAllMarkers = () => {
@@ -110,11 +139,20 @@ loadAllMarkers = () => {
   }
 }
 
-placeAndBindMarker = (latLng, name) => {
-  let newMarker = new google.maps.Marker({
-    position: latLng,
-    map: MAP
+pollDirtyBackEnd = () => {
+  keys = Object.keys(FRONT_END_MARKERS)
+  $.ajax({
+    url: '/check_dirty/' + KEY,
+    type: 'post',
+    dataType: 'json',
+    contentType: 'application/json',
+    data: JSON.stringify({'keys': keys}),
+    success: function (xhr) {
+      console.log('clean')
+    },
+    error: function(xhr) {
+      console.error('dirty');
+      location.reload();
+    }
   });
-  FRONT_END_MARKERS[name] = newMarker
-  bindMarkerEvents(newMarker, name);
 }

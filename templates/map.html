@@ -4,7 +4,6 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="initial-scale=1.0">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src='https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=init' async defer></script>
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'PolygonWrapper.js') }}" ></script>
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'map.js') }}" ></script>
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'jquery-latest.js') }}" ></script>
@@ -56,18 +55,17 @@
 
 
 		<script>
-			init = () => {
-			    initMap({{markers | tojson | safe}}, '{{key}}');
-			}
-			$(window).resize(function () {
-    var h = $(window).height(),
-        offsetTop = 60; // Calculate the top offset
+		init = () => {
+			initMap({{markers | tojson | safe}}, '{{key}}');
+		}
+		$(window).resize(function () {
+			var h = $(window).height(),
+			offsetTop = 60; // Calculate the top offset
 
-    $('#map').css('height', (h - offsetTop - 20));
-}).resize();
+			$('#map').css('height', (h - offsetTop - 20));
+		}).resize();
+		$(document).ready(()=>{setInterval(pollDirtyBackEnd, 3000)});
 		</script>
+		<script src='https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=init' async defer></script>
   </body>
 </html>
-{
-
-}
