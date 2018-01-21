@@ -14,7 +14,7 @@ def group(key):
                            api_key=api_key,
                            markers=markers,
                            key=key)
-                                    
+
 @app.route('/')
 def main():
     api_key = 'AIzaSyAl-P2j3M-a-IjP7Vfkp_ChinCQMTsb__0'
@@ -26,3 +26,13 @@ def add_marker(key):
     name = request.get_json()['name']
     hash_data[key][name] = {'position':json.loads(lat_lng_json)}
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+
+
+@app.route('/create_group/<key>', methods=['POST'])
+def create_group(key):
+    print(hash_data)
+    if key not in hash_data:
+        hash_data[key] = {}
+        return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+    else:
+        return json.dumps({'success':False}), 500, {'ContentType':'application/json'}
