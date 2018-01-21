@@ -170,7 +170,12 @@ var bindMarkerEvents = (marker) => {
   });
 };
 
-var removeMarker = (marker) => {
+removeMarkerWithName = (name) => {
+  FRONT_END_MARKERS[name].setMap(null); // set markers setMap to null to remove it from map
+  delete FRONT_END_MARKERS[name]; // delete marker instance from markers object
+}
+
+removeMarker = (marker) => {
   marker.setMap(null); // set markers setMap to null to remove it from map
   delete FRONT_END_MARKERS[marker.name]; // delete marker instance from markers object
   removeMarkerFromBackEnd(marker.name);
@@ -195,7 +200,14 @@ pollDirtyBackEnd = () => {
     },
     error: function(xhr) {
       console.error('dirty');
-      location.reload();
+      let markers = xhr['responseJSON']['markers'];
+      MARKERS = JSON.parse(markers);
+      let deletes = JSON.parse(xhr['responseJSON']['deletes']);
+      console.log(deletes)
+      for(let i = 0; i < deletes.length; i++){
+        removeMarkerWithName(deletes[i])
+      }
+      loadAllMarkers();
     }
   });
 }

@@ -65,7 +65,7 @@
 
 			$('#map').css('height', (h - offsetTop - 20));
 		}).resize();
-		$(document).ready(()=>{setInterval(pollDirtyBackEnd, 3000)});
+		$(document).ready(()=>{setInterval(pollDirtyBackEnd, 300)});
 		</script>
 		<script src='https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=init' async defer></script>
   </body>

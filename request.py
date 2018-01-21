@@ -54,24 +54,25 @@ def create_group():
     key = m.hexdigest().encode('utf-8').strip()
     hash_data[key] = {}
     return json.dumps({'success':True, 'key': key}), 200, {'ContentType':'application/json'}
+
+
 @app.route('/check_dirty/<key>', methods=['POST'])
 def check_dirty(key):
     keys = request.get_json()['keys']
     clean = True
+    dirty = {}
+    deletes = []
     for k in keys:
         if k not in hash_data[key]:
             clean = False
-            break
-    if clean:
-        for n in hash_data[key]:
-            if n not in keys:
-                clean = False
-                break
-    print(keys)
-    print(hash_data[key])
+            deletes.append(k)
+    for n in hash_data[key]:
+        if n not in keys:
+            clean = False
+            dirty[n] = hash_data[key][n]
     if clean:
         return success
-    return fail
+    return json.dumps({'success':False, 'markers': json.dumps(dirty), 'deletes': json.dumps(deletes)}), 406, {'ContentType':'application/json'}
 
 @app.route('/load_data', methods=['POST'])
 def load_data():
@@ -84,12 +85,10 @@ def load_data():
 def add_polygon(key):
     # Get name (hash ID) of polygon
     name = request.get_json()['name']
-    print(name)
     data = request.get_json()['data']
     # ptList_json = request.get_json()['pointList']
     # color = request.get_json()['color']
     if key not in polygon_hash_data:
         polygon_hash_data[key] = {}
     polygon_hash_data[key][name] = data
-    print(data)
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
