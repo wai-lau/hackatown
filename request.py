@@ -2,18 +2,13 @@ from flask import Flask, render_template, request
 import json
 
 app = Flask(__name__)
-hash_data = {"asdf":
-                [{
-                    'position':{'lat': 45.5017, 'lng': -73.5673},
-                    'title':'helpme'
-                }]
-            }
+hash_data = {"asdf":{}}
 
 @app.route('/group/<key>')
 def group(key):
     api_key = 'AIzaSyAl-P2j3M-a-IjP7Vfkp_ChinCQMTsb__0'
     if key not in hash_data:
-        hash_data[key] = []
+        hash_data[key] = {}
     markers = hash_data[key]
     return render_template("map.html", message="",
                            api_key=api_key,
@@ -27,5 +22,6 @@ def main():
 @app.route('/add_marker/<key>', methods=['POST'])
 def add_marker(key):
     lat_lng_json = request.get_json()['latLng']
-    hash_data[key].append({'position':json.loads(lat_lng_json)})
+    name = request.get_json()['name']
+    hash_data[key][name] = {'position':json.loads(lat_lng_json)}
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
