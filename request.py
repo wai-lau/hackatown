@@ -4,8 +4,9 @@ import random
 import datetime
 from flask import Flask, render_template, request
 
+
 app = Flask(__name__)
-hash_data = {"asdf":{}}
+hash_data = {}
 
 @app.route('/group/<key>')
 def group(key):
@@ -38,4 +39,5 @@ def create_group():
     m = md5.new()
     m.update(str(now)+str(rand))
     key = m.hexdigest().encode('utf-8').strip()
+    hash_data[key] = {}
     return json.dumps({'success':True, 'key': key}), 200, {'ContentType':'application/json'}

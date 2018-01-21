@@ -1,6 +1,7 @@
 let KEY = ''
 let MAP = null
 let MARKERS = {}
+let FRONT_END_MARKERS = {}
 
 initMap = (markers, key) => {
   KEY = key;
@@ -16,9 +17,8 @@ initMap = (markers, key) => {
 
 addClickListener = () => {
   MAP.addListener('click', (e) => {
-    placeMarkerAndPanTo(e.latLng, MAP);
-    let name = Date.now() + Math.random();
-    console.log(name)
+    placeMarker(e.latLng);
+    let name = e.latLng.lat() + '_' + e.latLng.lng();
     $.ajax({
         url: '/add_marker/' + KEY,
         type: 'post',
@@ -38,21 +38,38 @@ addClickListener = () => {
 
 loadAllMarkers = () => {
   for (name in MARKERS) {
-    loadMarker(MARKERS[name]);
+    loadMarker(MARKERS[name], name);
   }
 }
 
-loadMarker = (marker) => {
+var bindMarkerEvents = function(marker) {
+    google.maps.event.addListener(marker, "rightclick", function (e) {
+        var markerId = e.latLng.lat() + '_' + e.latLng.lng(); // get marker id by using clicked point's coordinate
+        var marker = FRONT_END_MARKERS[markerId]; // find marker
+        removeMarker(marker, markerId); // remove it
+    });
+};
+
+var removeMarker = function(marker, markerId) {
+    marker.setMap(null); // set markers setMap to null to remove it from map
+    delete FRONT_END_MARKERS[markerId]; // delete marker instance from markers object
+};
+
+loadMarker = (marker, name) => {
   let newMarker = new google.maps.Marker({
     position: marker['position'],
     map: MAP
   });
+  FRONT_END_MARKERS[name] = newMarker
+  bindMarkerEvents(newMarker, name);
 }
 
-function placeMarkerAndPanTo(latLng, MAP) {
-    var marker = new google.maps.Marker({
-      position: latLng,
-      map: MAP
-    });
-    //map.panTo(latLng);
+placeMarker = (latLng) => {
+  let markerId = latLng.lat() + '_' + latLng.lng();
+  let newMarker = new google.maps.Marker({
+    position: latLng,
+    map: MAP
+  });
+  FRONT_END_MARKERS[markerId] = newMarker
+  bindMarkerEvents(newMarker);
 }
