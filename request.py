@@ -1,5 +1,8 @@
-from flask import Flask, render_template, request
 import json
+import md5
+import random
+import datetime
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 hash_data = {"asdf":{}}
@@ -30,5 +33,9 @@ def add_marker(key):
 @app.route('/create_group')
 def create_group():
     # Create group hash here
-    key = 'temp';
+    now = datetime.datetime.now()
+    rand = random.random()
+    m = md5.new()
+    m.update(str(now)+str(rand))
+    key = m.hexdigest().encode('utf-8').strip()
     return json.dumps({'success':True, 'key': key}), 200, {'ContentType':'application/json'}
