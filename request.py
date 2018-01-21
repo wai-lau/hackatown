@@ -24,6 +24,7 @@ def group(key):
                            markers=markers,
                            key=key)
 
+
 @app.route('/')
 def main():
     return render_template("main.html", message="")
@@ -73,6 +74,26 @@ def check_dirty(key):
     if clean:
         return success
     return json.dumps({'success':False, 'markers': json.dumps(dirty), 'deletes': json.dumps(deletes)}), 406, {'ContentType':'application/json'}
+
+@app.route('/check_polygon_dirty/<key>', methods=['POST'])
+def check_polygon_dirty(key):
+    pKeys = request.get_json()['pKeys']
+    print(polygon_hash_data)
+    clean = True
+    for k in pKeys:
+        if k not in polygon_hash_data[key].keys():
+            clean = False
+            break
+    if clean:
+        for n in polygon_hash_data[key].keys():
+            if n not in pKeys:
+                clean = False
+                break
+    if clean:
+        print('clean!!')
+        return success
+    print('ew dirty')
+    return fail
 
 @app.route('/load_data', methods=['POST'])
 def load_data():
