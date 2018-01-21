@@ -2,7 +2,7 @@ let KEY = ''
 let MAP = null
 let MARKERS = {}
 let FRONT_END_MARKERS = {}
-let MODE = 'polygon'
+let MODE = 'marker'
 
 initMap = (markers, key) => {
   KEY = key;
@@ -13,32 +13,35 @@ initMap = (markers, key) => {
   MARKERS = markers;
   addClickListener();
   loadAllMarkers();
-
   // Initialize polygon list and pushes the initial polygon
   polygonList = [];
   polygonList.push(new PolygonWrapper(MAP));
-   //setInterval(() => { alert("Hello"); }, 3000);
+  //setInterval(() => { alert("Hello"); }, 3000);
+}
+
+sendMarkerToBackEnd = (e, name) => {
+  $.ajax({
+    url: '/add_marker/' + KEY,
+    type: 'post',
+    dataType: 'json',
+    contentType: 'application/json',
+    data: JSON.stringify({'latLng': JSON.stringify(e.latLng), 'name':name}),
+    success: function (xhr) {
+      MARKERS[name] = {'position': JSON.stringify(e.latLng)}
+      console.log(MARKERS)
+    },
+    error: function(xhr) {
+      console.log(xhr);
+    }
+  });
 }
 
 addClickListener = () => {
   MAP.addListener('click', (e) => {
-    if(MODE == 'polygon'){
-      placeMarker(e.latLng);
+    if(MODE == 'marker'){
       let name = e.latLng.lat() + '_' + e.latLng.lng();
-      $.ajax({
-        url: '/add_marker/' + KEY,
-        type: 'post',
-        dataType: 'json',
-        contentType: 'application/json',
-        data: JSON.stringify({'latLng': JSON.stringify(e.latLng), 'name':name}),
-        success: function (xhr) {
-          MARKERS[name] = {'position': JSON.stringify(e.latLng)}
-          console.log(MARKERS)
-        },
-        error: function(xhr) {
-          console.log(xhr);
-        }
-      });
+      placeAndBindMarker(e.latLng, name);
+      sendMarkerToBackEnd(e, name);
     }
     else if(MODE == 'polygon'){
       // Polygon logic for first polygon; draws until state is off
@@ -62,7 +65,6 @@ addClickListener = () => {
       }
     }
   });
-
   MAP.addListener('rightclick', (e) => {
     let name = Date.now() + Math.random();
     console.log(name);
@@ -89,40 +91,30 @@ addClickListener = () => {
   });
 }
 
-loadAllMarkers = () => {
-  for (name in MARKERS) {
-    loadMarker(MARKERS[name], name);
-  }
-}
-
 var bindMarkerEvents = function(marker) {
-    google.maps.event.addListener(marker, "rightclick", function (e) {
-        var markerId = e.latLng.lat() + '_' + e.latLng.lng(); // get marker id by using clicked point's coordinate
-        var marker = FRONT_END_MARKERS[markerId]; // find marker
-        removeMarker(marker, markerId); // remove it
-    });
+  google.maps.event.addListener(marker, "rightclick", function (e) {
+    var markerId = e.latLng.lat() + '_' + e.latLng.lng(); // get marker id by using clicked point's coordinate
+    var marker = FRONT_END_MARKERS[markerId]; // find marker
+    removeMarker(marker, markerId); // remove it
+  });
 };
 
 var removeMarker = function(marker, markerId) {
-    marker.setMap(null); // set markers setMap to null to remove it from map
-    delete FRONT_END_MARKERS[markerId]; // delete marker instance from markers object
+  marker.setMap(null); // set markers setMap to null to remove it from map
+  delete FRONT_END_MARKERS[markerId]; // delete marker instance from markers object
 };
 
-loadMarker = (marker, name) => {
-  let newMarker = new google.maps.Marker({
-    position: marker['position'],
-    map: MAP
-  });
-  FRONT_END_MARKERS[name] = newMarker
-  bindMarkerEvents(newMarker, name);
+loadAllMarkers = () => {
+  for (name in MARKERS) {
+    placeAndBindMarker(MARKERS[name]['position'], name);
+  }
 }
 
-placeMarker = (latLng) => {
-  let markerId = latLng.lat() + '_' + latLng.lng();
+placeAndBindMarker = (latLng, name) => {
   let newMarker = new google.maps.Marker({
     position: latLng,
     map: MAP
   });
-  FRONT_END_MARKERS[markerId] = newMarker
-  bindMarkerEvents(newMarker);
+  FRONT_END_MARKERS[name] = newMarker
+  bindMarkerEvents(newMarker, name);
 }
