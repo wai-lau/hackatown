@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request
 import json
-import pprint
 
 app = Flask(__name__)
 hash_data = {"asdf":
@@ -27,5 +26,6 @@ def main():
 
 @app.route('/add_marker/<key>', methods=['POST'])
 def add_marker(key):
-    latLng = request.get_json()
+    lat_lng_json = request.get_json()['latLng']
+    hash_data[key].append({'position':json.loads(lat_lng_json)})
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}

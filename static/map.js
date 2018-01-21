@@ -12,7 +12,7 @@ function initMap(markers, key) {
       position: markers[i]['position'],
       map: map
     });
-    }
+  }
 
     map.addListener('click', (e, key) => {
       placeMarkerAndPanTo(e.latLng, map);
