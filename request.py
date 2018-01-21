@@ -8,6 +8,7 @@ from getParks import getParks
 
 app = Flask(__name__)
 hash_data = {}
+polygon_hash_data = {}
 
 @app.route('/group/<key>')
 def group(key):
@@ -48,3 +49,17 @@ def load_data():
     shelters = getShelters()
     parks = getParks()
     return json.dumps({'success':True, 'parks': parks, 'shelters': shelters}), 200, {'ContentType':'application/json'}
+
+@app.route('/add_polygon/<key>', methods=['POST'])
+def add_polygon(key):
+    # Get name (hash ID) of polygon
+    name = request.get_json()['name']
+    print(name)
+    data = request.get_json()['data']
+    # ptList_json = request.get_json()['pointList']
+    # color = request.get_json()['color']
+    if key not in polygon_hash_data:
+        polygon_hash_data[key] = {}
+    polygon_hash_data[key][name] = data
+    print(data)
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
