@@ -2,13 +2,16 @@ let KEY = ''
 let MAP = null
 let MARKERS = {}
 let FRONT_END_MARKERS = {}
-let MODE = 'marker'
+let MODE = 'polygon'
+let CLICK_LISTENER = null;
+let RIGHTCLICK_LISTENER = null;
 
 initMap = (markers, key) => {
   KEY = key;
   MAP = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 45.5017, lng: -73.5673},
-    zoom: 10
+    zoom: 10,
+    gestureHandling: 'none'
   });
   var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
   var icons = {
@@ -23,13 +26,29 @@ initMap = (markers, key) => {
     }
   };
   MARKERS = markers;
-  addClickListener();
+  addMarkerListener();
   loadAllMarkers();
 
   // Initialize polygon list and pushes the initial polygon
   polygonList = [];
   polygonList.push(new PolygonWrapper(MAP));
 }
+
+changeMode = (arg) => {
+  arg = arg.toUpperCase();
+  google.maps.event.removeListener(CLICK_LISTENER);
+  google.maps.event.removeListener(RIGHTCLICK_LISTENER);
+  if (arg.indexOf('CURSOR') >= 0){
+    MODE ='cursor';
+  } else if (arg.indexOf('MARKER') >= 0) {
+    MODE = 'marker';
+    addMarkerListener();
+  } else if (arg.indexOf('POLYGON') >= 0) {
+    MODE = 'polygon'
+    addPolygonListener();
+  }
+}
+
 
 sendMarkerToBackEnd = (e, name) => {
   $.ajax({
@@ -64,63 +83,25 @@ removeMarkerFromBackEnd = (name) => {
   });
 }
 
-addClickListener = () => {
-  MAP.addListener('click', (e) => {
-    if(MODE == 'marker'){
-      let name = e.latLng.lat() + '_' + e.latLng.lng();
-      placeAndBindMarker(e.latLng, name)
-      $.ajax({
-        url: '/add_marker/' + KEY,
-        type: 'post',
-        dataType: 'json',
-        contentType: 'application/json',
-        data: JSON.stringify({'latLng': JSON.stringify(e.latLng), 'name':name}),
-        success: function (xhr) {
-          MARKERS[name] = {'position': JSON.stringify(e.latLng)}
-          console.log(MARKERS)
-        },
-        error: function(xhr) {
-          console.log(xhr);
-        }
-      });
-    }
-    else if(MODE == 'polygon'){
-      // Polygon logic for first polygon; draws until state is off
-      if (polygonList[polygonList.length-1].state == 'draw'){
-        polygonList[polygonList.length-1].addNode(e.latLng);
-        polygonList[polygonList.length-1].updatePolygon();
-
-        $.ajax({
-          url: '/add_polygon/' + KEY,
-          type: 'post',
-          dataType: 'json',
-          contentType: 'application/json',
-          // data: JSON.stringify({'pointList': JSON.stringify(polygonList[0].pointList), 'name':name ,'color':polygonList[0].color}),
-          data: JSON.stringify({
-            'name':polygonList[polygonList.length-1].name,
-            'data':JSON.stringify({'pointList': JSON.stringify(polygonList[0].pointList),
-            'color':polygonList[polygonList.length-1].color,
-            'state':polygonList[polygonList.length-1].state})}),
-
-          success: function (xhr) {
-            console.log(xhr)
-          },
-          error: function(xhr) {
-            console.error(xhr);
-          }
-        });
-      }
-    }
+addMarkerListener = () => {
+  CLICK_LISTENER = MAP.addListener('click', (e) => {
+    let name = e.latLng.lat() + '_' + e.latLng.lng();
+    placeAndBindMarker(e.latLng, name);
+    sendMarkerToBackEnd(e, name);
   });
+  RIGHTCLICK_LISTENER = MAP.addListener('rightclick', (e) => {
 
-  MAP.addListener('rightclick', (e) => {
     let name = Date.now() + Math.random();
     console.log(name);
-    if(MODE == 'polygon'){
-      // Make new polygon wrapper
-      polygonList.push(new PolygonWrapper(MAP));
-      // Locks previous polygon from left click draw
-      polygonList[polygonList.length-2].state = 'locked';
+  });
+}
+
+addPolygonListener = () => {
+  CLICK_LISTENER = MAP.addListener('click', (e) => {
+    // Polygon logic for first polygon; draws until state is off
+    if (polygonList[polygonList.length-1].state == 'draw'){
+      polygonList[polygonList.length-1].addNode(e.latLng);
+      polygonList[polygonList.length-1].updatePolygon();
 
       $.ajax({
         url: '/add_polygon/' + KEY,
@@ -140,6 +121,32 @@ addClickListener = () => {
         }
       });
     }
+  });
+  RIGHTCLICK_LISTENER = MAP.addListener('rightclick', (e) => {
+    let name = Date.now() + Math.random();
+    console.log(name);
+    // Make new polygon wrapper
+    polygonList.push(new PolygonWrapper(MAP));
+    // Locks previous polygon from left click draw
+    polygonList[polygonList.length-2].state = 'locked';
+
+    $.ajax({
+      url: '/add_polygon/' + KEY,
+      type: 'post',
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        'name':polygonList[polygonList.length-1].name,
+        'data':JSON.stringify({'pointList': JSON.stringify(polygonList[polygonList.length-1].pointList),
+        'color':polygonList[polygonList.length-1].color,
+        'state':polygonList[polygonList.length-1].state})}),
+      success: function (xhr) {
+        console.log(xhr)
+      },
+      error: function(xhr) {
+        console.error(xhr);
+      }
+    });
   });
 }
 
