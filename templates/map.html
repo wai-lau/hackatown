@@ -25,12 +25,48 @@
 	</style>
 </head>
   <body>
+		{% include 'navbar.html' %}
 		{{message}}
-    <div id="map"></div>
+		<div class="container main-map">
+			<div class="col-xs-2">
+				<div class="row">
+						<button class="btn btn-success">Click</button>
+				</div>
+				<div class="row">
+						<button class="btn btn-success">Mark</button>
+				</div>
+				<div class="row">
+						<button class="btn btn-success">Polygon</button>
+				</div>
+				<div class="row">
+						<button class="btn btn-success">Load</button>
+				</div>
+				<div class="row">
+						<button class="btn btn-success">Delete</button>
+				</div>
+				<div class="row">
+						<button class="btn btn-success">Invite</button>
+				</div>
+			</div>
+			<div class="col-xs-10">
+					<div id="map"></div>
+			</div>				
+		</div>
+					
+					
 		<script>
 			init = () => {
 			    initMap({{markers | tojson | safe}}, '{{key}}');
 			}
+			$(window).resize(function () {
+    var h = $(window).height(),
+        offsetTop = 60; // Calculate the top offset
+
+    $('#map').css('height', (h - offsetTop - 20));
+}).resize();
 		</script>
   </body>
 </html>
+{
+
+}
