@@ -30,21 +30,22 @@
 		{{message}}
 		<div class="container main-map">
 			<div class="col-xs-2">
-				<div id="map-buttons" class="btn-group-vertical">
-
-								<button class="btn btn-success map-button"><i class="fas fa-location-arrow"></i> Click</button>
-
-								<button class="btn btn-success map-button"><i class="fas fa-map-marker"></i> Mark</button>
-
-								<button class="btn btn-success map-button"><i class="fas fa-edit"></i> Polygon</button>
-
-								<button class="btn btn-success map-button"><i class="fas fa-upload"></i> Load</button>
-
-								<button class="btn btn-success map-button"><i class="fas fa-eraser"></i> Delete</button>
-
-								<button class="btn btn-success map-button"><i class="fas fa-envelope"></i> Invite</button>
-
+				<div id="map-buttons" class="btn-group-vertical hidden-xs">
+					<button class="btn btn-success map-button"><i class="fas fa-location-arrow"></i> Click</button>
+					<button class="btn btn-success map-button"><i class="fas fa-map-marker"></i> Mark</button>
+					<button class="btn btn-success map-button"><i class="fas fa-edit"></i> Polygon</button>
+					<button class="btn btn-success map-button"><i class="fas fa-upload"></i> Load</button>
+					<button class="btn btn-success map-button"><i class="fas fa-eraser"></i> Delete</button>
+					<button data-container="body" type="button" id="pop" class="btn btn-success map-button hidden-xs"  data-toggle="popover" data-trigger="manual" onclick="copyUrlToClipboard()" data-content="Copied url to clipboard!" data-placement="bottom"><i class="fas fa-envelope"></i> Invite</button>
 				</div>
+				<div id="map-buttons-small" class="btn-group-vertical hidden-lg hidden-md hidden-sm">
+						<button class="btn btn-success map-button-small"><i class="fas fa-location-arrow"></i></button>
+						<button class="btn btn-success map-button-small"><i class="fas fa-map-marker"></i></button>
+						<button class="btn btn-success map-button-small"><i class="fas fa-edit"></i></button>
+						<button class="btn btn-success map-button-small"><i class="fas fa-upload"></i></button>
+						<button class="btn btn-success map-button-small"><i class="fas fa-eraser"></i></button>
+						<button data-container="body" type="button" id="pop" class="btn btn-success map-button"  data-toggle="popover" data-trigger="manual" onclick="copyUrlToClipboard()" data-content="Copied url to clipboard!" data-placement="bottom"><i class="fas fa-envelope"></i></button>
+					</div>
 			</div>
 			<div class="col-xs-10">
 					<div id="map"></div>
@@ -63,6 +64,18 @@
 				$('#map').css('height', (h - offsetTop - 30));
 				$('#map-buttons').css('height', (h - offsetTop - 30));
 			}).resize();
+			timer = 0;
+			$("#pop").on("click", function(e){
+					$('#pop').popover('show');
+					if (timer > 0) {
+						clearTimeout(timer);
+          	timer = 0;
+					}
+					timer = setTimeout(function () {
+						$('#pop').popover('hide');
+					}, 2000);
+					window.scrollTo(0,0);
+    	});
 		</script>
   </body>
 </html>

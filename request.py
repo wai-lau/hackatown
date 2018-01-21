@@ -17,7 +17,7 @@ def group(key):
                            api_key=api_key,
                            markers=markers,
                            key=key)
-                    
+                                    
 @app.route('/')
 def main():
     api_key = 'AIzaSyAl-P2j3M-a-IjP7Vfkp_ChinCQMTsb__0'

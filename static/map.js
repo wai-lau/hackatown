@@ -56,3 +56,29 @@ function placeMarkerAndPanTo(latLng, MAP) {
     });
     //map.panTo(latLng);
 }
+
+function copyUrlToClipboard () {
+  var doc = document;
+
+  // Create temp element
+  var textarea = doc.createElement('textarea');
+  textarea.style.position = 'absolute';
+  textarea.style.opacity = '0';
+  textarea.textContent = window.location.href;
+
+  doc.body.appendChild(textarea);
+
+  textarea.focus();
+  textarea.setSelectionRange(0, textarea.value.length);
+
+  // copy the selection
+  var success;
+  try {
+          success = doc.execCommand("copy");
+  } catch(e) {
+          success = false;
+  }
+
+  textarea.remove();
+
+}
