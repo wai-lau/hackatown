@@ -5,7 +5,7 @@ let FRONT_END_MARKERS = {}
 let MODE = 'polygon'
 let CLICK_LISTENER = null;
 let RIGHTCLICK_LISTENER = null;
-
+let POLYGON_LIST = [];
 initMap = (markers, key) => {
   KEY = key;
   MAP = new google.maps.Map(document.getElementById('map'), {
@@ -28,10 +28,10 @@ initMap = (markers, key) => {
   MARKERS = markers;
   addMarkerListener();
   loadAllMarkers();
+  loadAllPolygons();
 
   // Initialize polygon list and pushes the initial polygon
-  polygonList = [];
-  polygonList.push(new PolygonWrapper(MAP));
+  POLYGON_LIST.push(new PolygonWrapper(MAP));
 }
 
 changeMode = (arg) => {
@@ -97,11 +97,12 @@ addMarkerListener = () => {
 }
 
 addPolygonListener = () => {
+  console.log(POLYGON_LIST);
   CLICK_LISTENER = MAP.addListener('click', (e) => {
     // Polygon logic for first polygon; draws until state is off
-    if (polygonList[polygonList.length-1].state == 'draw'){
-      polygonList[polygonList.length-1].addNode(e.latLng);
-      polygonList[polygonList.length-1].updatePolygon();
+    if (POLYGON_LIST[POLYGON_LIST.length-1].state == 'draw'){
+      POLYGON_LIST[POLYGON_LIST.length-1].addNode(e.latLng);
+      POLYGON_LIST[POLYGON_LIST.length-1].updatePolygon();
 
       $.ajax({
         url: '/add_polygon/' + KEY,
@@ -109,10 +110,10 @@ addPolygonListener = () => {
         dataType: 'json',
         contentType: 'application/json',
         data: JSON.stringify({
-          'name':polygonList[polygonList.length-1].name,
-          'data':JSON.stringify({'pointList': JSON.stringify(polygonList[polygonList.length-1].pointList),
-          'color':polygonList[polygonList.length-1].color,
-          'state':polygonList[polygonList.length-1].state})}),
+          'name':POLYGON_LIST[POLYGON_LIST.length-1].name,
+          'data':JSON.stringify({'pointList': JSON.stringify(POLYGON_LIST[POLYGON_LIST.length-1].pointList),
+          'color':POLYGON_LIST[POLYGON_LIST.length-1].color,
+          'state':POLYGON_LIST[POLYGON_LIST.length-1].state})}),
         success: function (xhr) {
           console.log(xhr)
         },
@@ -126,9 +127,9 @@ addPolygonListener = () => {
     let name = Date.now() + Math.random();
     console.log(name);
     // Make new polygon wrapper
-    polygonList.push(new PolygonWrapper(MAP));
+    POLYGON_LIST.push(new PolygonWrapper(MAP));
     // Locks previous polygon from left click draw
-    polygonList[polygonList.length-2].state = 'locked';
+    POLYGON_LIST[POLYGON_LIST.length-2].state = 'locked';
 
     $.ajax({
       url: '/add_polygon/' + KEY,
@@ -136,10 +137,10 @@ addPolygonListener = () => {
       dataType: 'json',
       contentType: 'application/json',
       data: JSON.stringify({
-        'name':polygonList[polygonList.length-1].name,
-        'data':JSON.stringify({'pointList': JSON.stringify(polygonList[polygonList.length-1].pointList),
-        'color':polygonList[polygonList.length-1].color,
-        'state':polygonList[polygonList.length-1].state})}),
+        'name':POLYGON_LIST[POLYGON_LIST.length-1].name,
+        'data':JSON.stringify({'pointList': JSON.stringify(POLYGON_LIST[POLYGON_LIST.length-1].pointList),
+        'color':POLYGON_LIST[POLYGON_LIST.length-1].color,
+        'state':POLYGON_LIST[POLYGON_LIST.length-1].state})}),
       success: function (xhr) {
         console.log(xhr)
       },
@@ -182,8 +183,14 @@ loadAllMarkers = () => {
   }
 }
 
+loadAllPolygons = () => {
+  for (let p in POLYGON_LIST){
+    p.updatePolygon();
+  }
+}
+
 pollDirtyBackEnd = () => {
-  keys = Object.keys(FRONT_END_MARKERS)
+  keys = Object.keys(FRONT_END_MARKERS);
   $.ajax({
     url: '/check_dirty/' + KEY,
     type: 'post',
@@ -196,6 +203,26 @@ pollDirtyBackEnd = () => {
     error: function(xhr) {
       console.error('dirty');
       location.reload();
+    }
+  });
+}
+
+pollDirtyPolygon = () => {
+  polyKeys = POLYGON_LIST.map((polygon) => {
+    return polygon.name}
+  )
+  $.ajax({
+    url: '/check_polygon_dirty/' + KEY,
+    type: 'post',
+    dataType: 'json',
+    contentType: 'application/json',
+    data: JSON.stringify({'pKeys': polyKeys}),
+    success: function (xhr) {
+      console.log('clean')
+    },
+    error: function(xhr) {
+      console.error('dirty');
+      //location.reload();
     }
   });
 }
