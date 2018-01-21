@@ -20,7 +20,8 @@ function initMap(markers, key) {
           url: '/add_marker/' + KEY,
           type: 'post',
           dataType: 'json',
-          data: {'latLng': JSON.stringify(e.latLng)},
+          contentType: 'application/json',
+          data: JSON.stringify({'latLng': JSON.stringify(e.latLng)}),
           success: function (xhr) {
             console.log("YAY! " + xhr);
           },
