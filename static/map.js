@@ -2,13 +2,14 @@ let KEY = ''
 let MAP = null
 let MARKERS = {}
 let FRONT_END_MARKERS = {}
-let MODE = 'marker'
+let MODE = 'polygon'
 
 initMap = (markers, key) => {
   KEY = key;
   MAP = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 45.5017, lng: -73.5673},
-    zoom: 10
+    zoom: 10,
+    gestureHandling: 'none'
   });
   MARKERS = markers;
   addClickListener();
@@ -25,7 +26,11 @@ sendMarkerToBackEnd = (e, name) => {
     type: 'post',
     dataType: 'json',
     contentType: 'application/json',
-    data: JSON.stringify({'latLng': JSON.stringify(e.latLng), 'name':name}),
+    data: JSON.stringify({
+            'name':polygonList[polygonList.length-1].name,
+            'data':JSON.stringify({'pointList': JSON.stringify(polygonList[0].pointList),
+            'color':polygonList[polygonList.length-1].color,
+            'state':polygonList[polygonList.length-1].state})}),
     success: function (xhr) {
       MARKERS[name] = {'position': JSON.stringify(e.latLng)}
       console.log(MARKERS)
@@ -45,16 +50,19 @@ addClickListener = () => {
     }
     else if(MODE == 'polygon'){
       // Polygon logic for first polygon; draws until state is off
-      if (polygonList[0].state == 'draw'){
-        polygonList[0].addNode(e.latLng);
-        polygonList[0].updatePolygon();
+      if (polygonList[polygonList.length-1].state == 'draw'){
+        polygonList[polygonList.length-1].addNode(e.latLng);
+        polygonList[polygonList.length-1].updatePolygon();
 
         $.ajax({
           url: '/add_polygon/' + KEY,
           type: 'post',
           dataType: 'json',
           contentType: 'application/json',
-          data: JSON.stringify({'latLng': JSON.stringify(polygonList[0].pointList), 'name':name ,'color':polygonList[0].color}),
+          data: JSON.stringify({'name':polygonList[polygonList.length-1].name,
+                    'data':JSON.stringify({'pointList': JSON.stringify(polygonList[polygonList.length-1].pointList),
+                    'color':polygonList[polygonList.length-1].color,
+                    'state':polygonList[polygonList.length-1].state})}),
           success: function (xhr) {
             console.log(xhr)
           },
@@ -79,7 +87,11 @@ addClickListener = () => {
         type: 'post',
         dataType: 'json',
         contentType: 'application/json',
-        data: JSON.stringify({'latLng': JSON.stringify(polygonList[polygonList.length-1].pointList), 'name':name, 'color':polygonList[0].color}),
+        data: JSON.stringify({
+          'name':polygonList[polygonList.length-1].name,
+          'data':JSON.stringify({'pointList': JSON.stringify(polygonList[polygonList.length-1].pointList),
+          'color':polygonList[polygonList.length-1].color,
+          'state':polygonList[polygonList.length-1].state})}),
         success: function (xhr) {
           console.log(xhr)
         },
@@ -90,6 +102,7 @@ addClickListener = () => {
     }
   });
 }
+
 
 var bindMarkerEvents = function(marker) {
   google.maps.event.addListener(marker, "rightclick", function (e) {
