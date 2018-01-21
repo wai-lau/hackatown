@@ -5,8 +5,9 @@
 	<meta name="viewport" content="initial-scale=1.0">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'map.js') }}" ></script>
+	<script type = "text/javascript" src = "{{ url_for('static', filename = 'generateKey.js') }}" ></script>
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'jquery-latest.js') }}" ></script>
-	
+
 	<title>TITLE</title>
 
 	<style>
@@ -33,28 +34,12 @@
 		<form>
 				<div class="form-group">
 					<div class="row">
-						<div class="col-md-2">
-
+						<div class="col-md-12 main-button" onclick="createNewGroup()">
+								<a class="btn btn-primary btn-lg" href="#" role="button">New Group</a>
 						</div>
-						<div class="col-md-8">
-								<label for="inputHash">Enter a new group name or join an existing one.</label>
-								<input type="text" class="form-control input-lg" id="inputHash" placeholder="">
-						</div>
-							
-						<div class="col-md-2">
-									
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-6 main-button">
-								<a class="btn btn-primary btn-lg" href="#" role="button">New Group</a> 
-						</div>
-						<div class="col-md-6 main-button">
-								<a class="btn btn-primary btn-lg" href="#" role="button">Join Group</a>
-							</div>
 					</div>
 				</div>
-	
+
 		</form>
 	</div>
 </div>

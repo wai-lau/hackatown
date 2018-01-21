@@ -1,5 +1,8 @@
-from flask import Flask, render_template, request
 import json
+import md5
+import random
+import datetime
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 hash_data = {"asdf":{}}
@@ -14,7 +17,7 @@ def group(key):
                            api_key=api_key,
                            markers=markers,
                            key=key)
-                
+
 @app.route('/')
 def main():
     api_key = 'AIzaSyAl-P2j3M-a-IjP7Vfkp_ChinCQMTsb__0'
@@ -26,3 +29,13 @@ def add_marker(key):
     name = request.get_json()['name']
     hash_data[key][name] = {'position':json.loads(lat_lng_json)}
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+
+@app.route('/create_group')
+def create_group():
+    # Create group hash here
+    now = datetime.datetime.now()
+    rand = random.random()
+    m = md5.new()
+    m.update(str(now)+str(rand))
+    key = m.hexdigest().encode('utf-8').strip()
+    return json.dumps({'success':True, 'key': key}), 200, {'ContentType':'application/json'}
