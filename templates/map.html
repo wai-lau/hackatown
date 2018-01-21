@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'PolygonWrapper.js') }}" ></script>
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'map.js') }}" ></script>
+	<script type = "text/javascript" src = "{{ url_for('static', filename = 'loadData.js') }}" ></script>
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'jquery-latest.js') }}" ></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<title>TITLE</title>
@@ -39,7 +40,7 @@
 						<button class="btn btn-success">Polygon</button>
 				</div>
 				<div class="row">
-						<button class="btn btn-success">Load</button>
+						<button class="btn btn-success" onclick="loadData()">Load</button>
 				</div>
 				<div class="row">
 						<button class="btn btn-success">Delete</button>

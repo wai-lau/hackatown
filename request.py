@@ -3,13 +3,15 @@ import md5
 import random
 import datetime
 from flask import Flask, render_template, request
-
+from parseFL import getShelters
+from getParks import getParks
 
 app = Flask(__name__)
 hash_data = {}
 success = json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 fail = json.dumps({'success':False}), 500, {'ContentType':'application/json'}
 api_key = 'AIzaSyAl-P2j3M-a-IjP7Vfkp_ChinCQMTsb__0'
+polygon_hash_data = {}
 
 @app.route('/group/<key>')
 def group(key):
@@ -52,7 +54,6 @@ def create_group():
     key = m.hexdigest().encode('utf-8').strip()
     hash_data[key] = {}
     return json.dumps({'success':True, 'key': key}), 200, {'ContentType':'application/json'}
-
 @app.route('/check_dirty/<key>', methods=['POST'])
 def check_dirty(key):
     keys = request.get_json()['keys']
@@ -69,3 +70,23 @@ def check_dirty(key):
     if clean:
         return success
     return fail
+
+@app.route('/load_data', methods=['POST'])
+def load_data():
+    shelters = getShelters()
+    parks = getParks()
+    return json.dumps({'success':True, 'parks': parks, 'shelters': shelters}), 200, {'ContentType':'application/json'}
+
+@app.route('/add_polygon/<key>', methods=['POST'])
+def add_polygon(key):
+    # Get name (hash ID) of polygon
+    name = request.get_json()['name']
+    print(name)
+    data = request.get_json()['data']
+    # ptList_json = request.get_json()['pointList']
+    # color = request.get_json()['color']
+    if key not in polygon_hash_data:
+        polygon_hash_data[key] = {}
+    polygon_hash_data[key][name] = data
+    print(data)
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
