@@ -28,9 +28,9 @@
 		{{message}}
     <div id="map"></div>
 		<script>
-		init = () => {
-		    initMap({{markers | tojson | safe}}, '{{key}}');
-		}
+			init = () => {
+			    initMap({{markers | tojson | safe}}, '{{key}}');
+			}
 		</script>
   </body>
 </html>

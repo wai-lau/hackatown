@@ -1,5 +1,6 @@
-from flask import Flask, render_template
-
+from flask import Flask, render_template, request
+import json
+import pprint
 
 app = Flask(__name__)
 hash_data = {"asdf":
@@ -24,6 +25,8 @@ def group(key):
 def main():
     return render_template("main.html", message="")
 
-@app.route('/group_request/<key>', methods=['POST'])
-def group_request(key):
+@app.route('/add_marker/<key>', methods=['POST'])
+def add_marker(key):
     print('posted')
+    pprint.pprint(request)
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
