@@ -1,11 +1,8 @@
 let KEY = ''
 let MAP = null
 let MARKERS = {}
-<<<<<<< HEAD
 let FRONT_END_MARKERS = {}
-=======
-let STATE = 'polygon'
->>>>>>> 795f34962d6d3a3a72a4a6c2c99395c47ac21e25
+let MODE = 'polygon'
 
 initMap = (markers, key) => {
   KEY = key;
@@ -25,9 +22,10 @@ initMap = (markers, key) => {
 
 addClickListener = () => {
   MAP.addListener('click', (e) => {
-    placeMarker(e.latLng);
-    let name = e.latLng.lat() + '_' + e.latLng.lng();
-    $.ajax({
+    if(MODE == 'polygon'){
+      placeMarker(e.latLng);
+      let name = e.latLng.lat() + '_' + e.latLng.lng();
+      $.ajax({
         url: '/add_marker/' + KEY,
         type: 'post',
         dataType: 'json',
@@ -42,7 +40,7 @@ addClickListener = () => {
         }
       });
     }
-    else if(STATE == 'polygon'){
+    else if(MODE == 'polygon'){
       // Polygon logic for first polygon; draws until state is off
       if (polygonList[0].state == 'draw'){
         polygonList[0].addNode(e.latLng);
@@ -68,7 +66,7 @@ addClickListener = () => {
   MAP.addListener('rightclick', (e) => {
     let name = Date.now() + Math.random();
     console.log(name);
-    if(STATE == 'polygon'){
+    if(MODE == 'polygon'){
       // Make new polygon wrapper
       polygonList.push(new PolygonWrapper(MAP));
       // Locks previous polygon from left click draw
