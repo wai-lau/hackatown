@@ -24,6 +24,7 @@ def group(key):
                            markers=markers,
                            key=key)
 
+
 @app.route('/')
 def main():
     return render_template("main.html", message="")
