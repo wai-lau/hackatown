@@ -26,26 +26,38 @@
 </head>
 
 <body>
+	<div id="background-carousel">
+		<div id="myCarousel" class="carousel slide" data-ride="carousel">
+			<div class="carousel-inner">
+				<div class="item active" style="background-image:url({{url_for('static', filename='scenery1.jpg')}})"></div>
+				<div class="item" style="background-image:url({{url_for('static', filename='scenery2.jpg')}})"></div>
+				<div class="item" style="background-image:url({{url_for('static', filename='scenery3.jpg')}})"></div>  
+			</div>
+		</div>
+	</div>
 	{% include 'navbar.html' %}
-<div class="jumbotron">
-	<div class="container text-center">
-		<h1>Welcome to One Ok Maps!</h1>
-		<p>Endorsed by One Ok Rock!</p>
-		<form>
+	<div class="jumbotron vertical-center">
+		<div class="container text-center">
+			<h1>Welcome to One Ok Maps!</h1>
+			<p>Endorsed by One Ok Rock!</p>
+			<form>
 				<div class="form-group">
 					<div class="row">
 						<div class="col-md-12 main-button" onclick="createNewGroup()">
-								<a class="btn btn-primary btn-lg" href="#" role="button">New Group</a>
+							<a class="btn btn-primary btn-lg" href="#" role="button">New Group</a>
 						</div>
 					</div>
 				</div>
-
-		</form>
+			</form>
+		</div>
 	</div>
-</div>
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+<script> 
+	$('#myCarousel').carousel({
+		pause: 'none'
+	})
+</script>
 
 </body>
 </html>

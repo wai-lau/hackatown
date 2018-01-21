@@ -8,6 +8,7 @@
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'map.js') }}" ></script>
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'jquery-latest.js') }}" ></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link href="https://use.fontawesome.com/releases/v5.0.4/css/all.css" rel="stylesheet">
 	<title>TITLE</title>
 
 	<style>
@@ -29,23 +30,20 @@
 		{{message}}
 		<div class="container main-map">
 			<div class="col-xs-2">
-				<div class="row">
-						<button class="btn btn-success">Click</button>
-				</div>
-				<div class="row">
-						<button class="btn btn-success">Mark</button>
-				</div>
-				<div class="row">
-						<button class="btn btn-success">Polygon</button>
-				</div>
-				<div class="row">
-						<button class="btn btn-success">Load</button>
-				</div>
-				<div class="row">
-						<button class="btn btn-success">Delete</button>
-				</div>
-				<div class="row">
-						<button class="btn btn-success">Invite</button>
+				<div id="map-buttons" class="btn-group-vertical">
+
+								<button class="btn btn-success map-button"><i class="fas fa-location-arrow"></i> Click</button>
+
+								<button class="btn btn-success map-button"><i class="fas fa-map-marker"></i> Mark</button>
+
+								<button class="btn btn-success map-button"><i class="fas fa-edit"></i> Polygon</button>
+
+								<button class="btn btn-success map-button"><i class="fas fa-upload"></i> Load</button>
+
+								<button class="btn btn-success map-button"><i class="fas fa-eraser"></i> Delete</button>
+
+								<button class="btn btn-success map-button"><i class="fas fa-envelope"></i> Invite</button>
+
 				</div>
 			</div>
 			<div class="col-xs-10">
@@ -59,11 +57,12 @@
 			    initMap({{markers | tojson | safe}}, '{{key}}');
 			}
 			$(window).resize(function () {
-    var h = $(window).height(),
+    		var h = $(window).height(),
         offsetTop = 60; // Calculate the top offset
 
-    $('#map').css('height', (h - offsetTop - 20));
-}).resize();
+				$('#map').css('height', (h - offsetTop - 30));
+				$('#map-buttons').css('height', (h - offsetTop - 30));
+			}).resize();
 		</script>
   </body>
 </html>
