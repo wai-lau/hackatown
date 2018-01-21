@@ -7,6 +7,7 @@ from parseFL import getShelters
 from getParks import getParks
 
 
+
 app = Flask(__name__)
 hash_data = {}
 polygon_hash_data = {}
@@ -29,6 +30,7 @@ def main():
 
 @app.route('/add_marker/<key>', methods=['POST'])
 def add_marker(key):
+    print(request.get_json())
     lat_lng_json = request.get_json()['latLng']
     name = request.get_json()['name']
     hash_data[key][name] = {'position':json.loads(lat_lng_json)}
