@@ -27,12 +27,8 @@ def add_marker(key):
     hash_data[key][name] = {'position':json.loads(lat_lng_json)}
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
 
-
-@app.route('/create_group/<key>', methods=['POST'])
-def create_group(key):
-    print(hash_data)
-    if key not in hash_data:
-        hash_data[key] = {}
-        return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
-    else:
-        return json.dumps({'success':False}), 500, {'ContentType':'application/json'}
+@app.route('/create_group')
+def create_group():
+    # Create group hash here
+    key = 'temp';
+    return json.dumps({'success':True, 'key': key}), 200, {'ContentType':'application/json'}

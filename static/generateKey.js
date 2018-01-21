@@ -1,15 +1,14 @@
 function createNewGroup() {
-  let key = $('#inputHash').val();
   $.ajax({
-      url: '/create_group/' + key,
-      type: 'post',
+      url: '/create_group',
+      type: 'get',
       contentType: 'application/json',
       success: function (xhr) {
-        window.alert('Redirecting now...');
-        window.location.href = '/group/' + key;
+        let groupId = JSON.parse(xhr)["key"];
+        window.location.href = '/group/' + groupId;
       },
       error: function(xhr) {
-        window.alert('Group name has already been created!');
+        window.alert('Error has occurred. Please try again');
       }
     });
 }
