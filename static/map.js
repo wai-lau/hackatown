@@ -243,3 +243,40 @@ populateLoadMarkers = (data) => {
     }
   }
 }
+
+
+loadData = () => {
+  $.ajax({
+    url: '/load_data',
+    type: 'post',
+    dataType: 'json',
+    contentType: 'application/json',
+    success: function (xhr) {
+      console.log(xhr);
+      let data = [xhr['shelters'], xhr['parks']];
+      populateLoadMarkers(data)
+    },
+    error: function(xhr) {
+      alert('nuh');
+      console.log(xhr);
+    }
+  });
+}
+
+populateLoadMarkers = (data) => {
+  let newMarker = null;
+  let locationData = null;
+  let iconType = null;
+  for (let dataType in data) {
+  	for (let location in data[dataType]){
+  		locationData = data[dataType][location];
+      iconType = dataType == 0 ? 'https://png.icons8.com/color/50/000000/home.png'
+                                  : 'https://png.icons8.com/color/50/000000/deciduous-tree.png'
+      newMarker = new google.maps.Marker({
+        position: {lat: locationData.coordinates[1], lng: locationData.coordinates[0]},
+        map: MAP,
+        icon: iconType
+      })
+    }
+  }
+}
