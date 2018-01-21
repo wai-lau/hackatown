@@ -52,6 +52,7 @@ def create_group():
     key = m.hexdigest().encode('utf-8').strip()
     hash_data[key] = {}
     return json.dumps({'success':True, 'key': key}), 200, {'ContentType':'application/json'}
+
 @app.route('/check_dirty/<key>', methods=['POST'])
 def check_dirty(key):
     keys = request.get_json()['keys']
@@ -65,6 +66,8 @@ def check_dirty(key):
             if n not in keys:
                 clean = False
                 break
+    print(keys)
+    print(hash_data[key])
     if clean:
         return success
     return fail

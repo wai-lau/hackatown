@@ -1,7 +1,8 @@
 let KEY = ''
 let MAP = null
 let MARKERS = {}
-let MODE = 'polygon'
+let FRONT_END_MARKERS = {}
+let MODE = 'marker'
 
 initMap = (markers, key) => {
   KEY = key;
@@ -28,7 +29,6 @@ initMap = (markers, key) => {
   // Initialize polygon list and pushes the initial polygon
   polygonList = [];
   polygonList.push(new PolygonWrapper(MAP));
-  setInterval(pollDirtyBackEnd(), 3000);
 }
 
 sendMarkerToBackEnd = (e, name) => {
@@ -66,10 +66,9 @@ removeMarkerFromBackEnd = (name) => {
 
 addClickListener = () => {
   MAP.addListener('click', (e) => {
-    let name = Date.now() + Math.random();
-    console.log(name)
     if(MODE == 'marker'){
-      placeMarkerAndPanTo(e.latLng, MAP);
+      let name = e.latLng.lat() + '_' + e.latLng.lng();
+      placeAndBindMarker(e.latLng, name)
       $.ajax({
         url: '/add_marker/' + KEY,
         type: 'post',
@@ -192,6 +191,8 @@ pollDirtyBackEnd = () => {
       location.reload();
     }
   });
+}
+
 loadMarker = (marker) => {
   let newMarker = new google.maps.Marker({
     position: marker['position'],
