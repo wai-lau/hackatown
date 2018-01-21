@@ -4,8 +4,9 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="initial-scale=1.0">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src='https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=init' async defer></script>
+	<script type = "text/javascript" src = "{{ url_for('static', filename = 'PolygonWrapper.js') }}" ></script>
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'map.js') }}" ></script>
+	<script type = "text/javascript" src = "{{ url_for('static', filename = 'loadData.js') }}" ></script>
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'jquery-latest.js') }}" ></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<link href="https://use.fontawesome.com/releases/v5.0.4/css/all.css" rel="stylesheet">
@@ -49,10 +50,10 @@
 			</div>
 			<div class="col-xs-10">
 					<div id="map"></div>
-			</div>				
+			</div>
 		</div>
-					
-					
+
+
 		<script>
 			init = () => {
 			    initMap({{markers | tojson | safe}}, '{{key}}');
@@ -75,10 +76,9 @@
 						$('#pop').popover('hide');
 					}, 2000);
 					window.scrollTo(0,0);
-    	});
+			});
+			$(document).ready(()=>{setInterval(pollDirtyBackEnd, 3000)});
 		</script>
+		<script src='https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=init' async defer></script>
   </body>
 </html>
-{
-
-}
