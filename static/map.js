@@ -171,7 +171,7 @@ var removeMarker = (marker) => {
 
 loadAllMarkers = () => {
   for (name in MARKERS) {
-    loadMarker(MARKERS[name]);
+    placeAndBindMarker(MARKERS[name]['position'], name);
   }
 }
 
@@ -190,13 +190,6 @@ pollDirtyBackEnd = () => {
       console.error('dirty');
       location.reload();
     }
-  });
-}
-
-loadMarker = (marker) => {
-  let newMarker = new google.maps.Marker({
-    position: marker['position'],
-    map: MAP
   });
 }
 
