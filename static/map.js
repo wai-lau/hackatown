@@ -11,7 +11,7 @@ initMap = (markers, key) => {
   MAP = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 45.5017, lng: -73.5673},
     zoom: 10,
-    gestureHandling: 'none'
+    disableDoubleClickZoom: true
   });
   var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
   var icons = {
