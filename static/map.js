@@ -231,7 +231,7 @@ function copyUrlToClipboard () {
   }
 
   textarea.remove();
-
+}
 loadData = () => {
   $.ajax({
     url: '/load_data',
