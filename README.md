@@ -13,7 +13,7 @@ We used python to make our backend. For the front end we used Javascript and Boo
 # Deployment
 
 ```
-python.request.py
+python server.py
 ```
 
 # Challenges we ran into
