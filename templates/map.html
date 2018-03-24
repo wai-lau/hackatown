@@ -10,7 +10,7 @@
 	<script type = "text/javascript" src = "{{ url_for('static', filename = 'jquery-latest.js') }}" ></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<link href="https://use.fontawesome.com/releases/v5.0.4/css/all.css" rel="stylesheet">
-	<title>TITLE</title>
+	<title>MarkerTown</title>
 
 	<style>
 		/* Always set the map height explicitly to define the size of the div
@@ -33,9 +33,9 @@
 			<div class="col-xs-2">
 				<div id="map-buttons" class="btn-group-vertical hidden-xs">
 					<button class="btn btn-success map-button"><i class="fas fa-location-arrow"></i> Click</button>
-					<button class="btn btn-success map-button"><i class="fas fa-map-marker"></i> Mark</button>
-					<button class="btn btn-success map-button"><i class="fas fa-edit"></i> Polygon</button>
-					<button class="btn btn-success map-button"><i class="fas fa-upload"></i> Load</button>
+					<button class="btn btn-success map-button" onclick="changeMode('marker')"><i class="fas fa-map-marker"></i> Mark</button>
+					<button class="btn btn-success map-button" onclick="changeMode('polygon')"><i class="fas fa-edit"></i> Polygon</button>
+					<button class="btn btn-success map-button" onclick="loadData()"><i class="fas fa-upload"></i> Load</button>
 					<button class="btn btn-success map-button"><i class="fas fa-eraser"></i> Delete</button>
 					<button data-container="body" type="button" id="pop" class="btn btn-success map-button hidden-xs"  data-toggle="popover" data-trigger="manual" onclick="copyUrlToClipboard()" data-content="Copied url to clipboard!" data-placement="bottom"><i class="fas fa-envelope"></i> Invite</button>
 				</div>
@@ -61,7 +61,6 @@
 			$(window).resize(function () {
     		var h = $(window).height(),
         offsetTop = 60; // Calculate the top offset
-
 				$('#map').css('height', (h - offsetTop - 30));
 				$('#map-buttons').css('height', (h - offsetTop - 30));
 			}).resize();
@@ -77,7 +76,7 @@
 					}, 2000);
 					window.scrollTo(0,0);
 			});
-			$(document).ready(()=>{setInterval(pollDirtyBackEnd, 3000)});
+			$(document).ready(()=>{setInterval(pollDirtyBackEnd, 300)});
 		</script>
 		<script src='https://maps.googleapis.com/maps/api/js?key={{api_key}}&callback=init' async defer></script>
   </body>

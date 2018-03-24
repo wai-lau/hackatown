@@ -5,7 +5,7 @@ let FRONT_END_MARKERS = {}
 let MODE = 'polygon'
 let CLICK_LISTENER = null;
 let RIGHTCLICK_LISTENER = null;
-
+let POLYGON_LIST = [];
 initMap = (markers, key) => {
   KEY = key;
   MAP = new google.maps.Map(document.getElementById('map'), {
@@ -13,25 +13,13 @@ initMap = (markers, key) => {
     zoom: 10,
     disableDoubleClickZoom: true
   });
-  var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
-  var icons = {
-    parking: {
-      icon: iconBase + 'parking_lot_maps.png'
-    },
-    library: {
-      icon: iconBase + 'library_maps.png'
-    },
-    info: {
-      icon: iconBase + 'info-i_maps.png'
-    }
-  };
   MARKERS = markers;
   addMarkerListener();
   loadAllMarkers();
+  loadAllPolygons();
 
   // Initialize polygon list and pushes the initial polygon
-  polygonList = [];
-  polygonList.push(new PolygonWrapper(MAP));
+  POLYGON_LIST.push(new PolygonWrapper(MAP));
 }
 
 changeMode = (arg) => {
@@ -97,11 +85,12 @@ addMarkerListener = () => {
 }
 
 addPolygonListener = () => {
+  console.log(POLYGON_LIST);
   CLICK_LISTENER = MAP.addListener('click', (e) => {
     // Polygon logic for first polygon; draws until state is off
-    if (polygonList[polygonList.length-1].state == 'draw'){
-      polygonList[polygonList.length-1].addNode(e.latLng);
-      polygonList[polygonList.length-1].updatePolygon();
+    if (POLYGON_LIST[POLYGON_LIST.length-1].state == 'draw'){
+      POLYGON_LIST[POLYGON_LIST.length-1].addNode(e.latLng);
+      POLYGON_LIST[POLYGON_LIST.length-1].updatePolygon();
 
       $.ajax({
         url: '/add_polygon/' + KEY,
@@ -109,10 +98,10 @@ addPolygonListener = () => {
         dataType: 'json',
         contentType: 'application/json',
         data: JSON.stringify({
-          'name':polygonList[polygonList.length-1].name,
-          'data':JSON.stringify({'pointList': JSON.stringify(polygonList[polygonList.length-1].pointList),
-          'color':polygonList[polygonList.length-1].color,
-          'state':polygonList[polygonList.length-1].state})}),
+          'name':POLYGON_LIST[POLYGON_LIST.length-1].name,
+          'data':JSON.stringify({'pointList': JSON.stringify(POLYGON_LIST[POLYGON_LIST.length-1].pointList),
+          'color':POLYGON_LIST[POLYGON_LIST.length-1].color,
+          'state':POLYGON_LIST[POLYGON_LIST.length-1].state})}),
         success: function (xhr) {
           console.log(xhr)
         },
@@ -126,9 +115,9 @@ addPolygonListener = () => {
     let name = Date.now() + Math.random();
     console.log(name);
     // Make new polygon wrapper
-    polygonList.push(new PolygonWrapper(MAP));
+    POLYGON_LIST.push(new PolygonWrapper(MAP));
     // Locks previous polygon from left click draw
-    polygonList[polygonList.length-2].state = 'locked';
+    POLYGON_LIST[POLYGON_LIST.length-2].state = 'locked';
 
     $.ajax({
       url: '/add_polygon/' + KEY,
@@ -136,10 +125,10 @@ addPolygonListener = () => {
       dataType: 'json',
       contentType: 'application/json',
       data: JSON.stringify({
-        'name':polygonList[polygonList.length-1].name,
-        'data':JSON.stringify({'pointList': JSON.stringify(polygonList[polygonList.length-1].pointList),
-        'color':polygonList[polygonList.length-1].color,
-        'state':polygonList[polygonList.length-1].state})}),
+        'name':POLYGON_LIST[POLYGON_LIST.length-1].name,
+        'data':JSON.stringify({'pointList': JSON.stringify(POLYGON_LIST[POLYGON_LIST.length-1].pointList),
+        'color':POLYGON_LIST[POLYGON_LIST.length-1].color,
+        'state':POLYGON_LIST[POLYGON_LIST.length-1].state})}),
       success: function (xhr) {
         console.log(xhr)
       },
@@ -170,7 +159,12 @@ var bindMarkerEvents = (marker) => {
   });
 };
 
-var removeMarker = (marker) => {
+removeMarkerWithName = (name) => {
+  FRONT_END_MARKERS[name].setMap(null); // set markers setMap to null to remove it from map
+  delete FRONT_END_MARKERS[name]; // delete marker instance from markers object
+}
+
+removeMarker = (marker) => {
   marker.setMap(null); // set markers setMap to null to remove it from map
   delete FRONT_END_MARKERS[marker.name]; // delete marker instance from markers object
   removeMarkerFromBackEnd(marker.name);
@@ -182,8 +176,14 @@ loadAllMarkers = () => {
   }
 }
 
+loadAllPolygons = () => {
+  for (let p in POLYGON_LIST){
+    p.updatePolygon();
+  }
+}
+
 pollDirtyBackEnd = () => {
-  keys = Object.keys(FRONT_END_MARKERS)
+  keys = Object.keys(FRONT_END_MARKERS);
   $.ajax({
     url: '/check_dirty/' + KEY,
     type: 'post',
@@ -195,7 +195,34 @@ pollDirtyBackEnd = () => {
     },
     error: function(xhr) {
       console.error('dirty');
-      location.reload();
+      let markers = xhr['responseJSON']['markers'];
+      MARKERS = JSON.parse(markers);
+      let deletes = JSON.parse(xhr['responseJSON']['deletes']);
+      console.log(deletes)
+      for(let i = 0; i < deletes.length; i++){
+        removeMarkerWithName(deletes[i])
+      }
+      loadAllMarkers();
+    }
+  });
+}
+
+pollDirtyPolygon = () => {
+  polyKeys = POLYGON_LIST.map((polygon) => {
+    return polygon.name}
+  )
+  $.ajax({
+    url: '/check_polygon_dirty/' + KEY,
+    type: 'post',
+    dataType: 'json',
+    contentType: 'application/json',
+    data: JSON.stringify({'pKeys': polyKeys}),
+    success: function (xhr) {
+      console.log('clean')
+    },
+    error: function(xhr) {
+      console.error('dirty');
+      //location.reload();
     }
   });
 }
@@ -232,6 +259,10 @@ function copyUrlToClipboard () {
 
   textarea.remove();
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8efba10b7b08bdebee030829f71041995f2cfdd1
 loadData = () => {
   $.ajax({
     url: '/load_data',
@@ -303,4 +334,24 @@ populateLoadMarkers = (data) => {
       })
     }
   }
+}
+
+function copyUrlToClipboard () {
+  var doc = document;
+  // Create temp element
+  var textarea = doc.createElement('textarea');
+  textarea.style.position = 'absolute';
+  textarea.style.opacity = '0';
+  textarea.textContent = window.location.href;
+  doc.body.appendChild(textarea);
+  textarea.focus();
+  textarea.setSelectionRange(0, textarea.value.length);
+  // copy the selection
+  var success;
+  try {
+    success = doc.execCommand("copy");
+  } catch(e) {
+    success = false;
+  }
+  textarea.remove();
 }
