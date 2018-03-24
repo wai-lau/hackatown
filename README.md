@@ -1,3 +1,6 @@
+# What it is
+Plan and draw on Google Maps with friends with this online collaborator
+
 # Inspiration
 We wanted to make an application using the smart town theme that helps everyone.
 
